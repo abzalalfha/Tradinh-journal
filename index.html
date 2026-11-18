@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<meta name="description" content="Private offline-first trading journal">
+<link rel="manifest" href="manifest.webmanifest">
+<title>TradeJournal — Private Trading Journal</title>
+<style>
+:root{--bg:#080e19;--panel:#101a2b;--panel2:#142137;--line:#263650;--text:#edf3ff;--muted:#91a2bd;--green:#35d39a;--red:#ff6b78;--blue:#78a9ff;--amber:#ffc66d;--radius:16px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#13223b 0,#080e19 55%);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{max-width:1250px;margin:auto;padding:22px 18px 60px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:12px}.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#4f8cff,#26d6a0);display:grid;place-items:center;color:#06111c;font-weight:900;font-size:21px}.brand h1{font-size:20px;margin:0;letter-spacing:.2px}.brand p{margin:2px 0 0;color:var(--muted);font-size:12px}.local{font-size:12px;color:var(--green);border:1px solid #245943;background:#10271f;padding:7px 10px;border-radius:99px}
+nav{display:flex;gap:8px;overflow:auto;padding:4px 0 15px;margin-bottom:15px}nav button,.btn{border:1px solid var(--line);background:#111d30;color:var(--muted);padding:10px 14px;border-radius:11px;white-space:nowrap}nav button.active,.btn.primary{background:#2868d8;border-color:#2868d8;color:white}button:hover{filter:brightness(1.12)}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.card{background:linear-gradient(145deg,#111d30,#0e1727);border:1px solid var(--line);border-radius:var(--radius);padding:17px;min-width:0}.metric .label{font-size:12px;color:var(--muted)}.metric .value{font-size:25px;font-weight:750;margin-top:7px;letter-spacing:-.5px}.positive{color:var(--green)!important}.negative{color:var(--red)!important}.muted{color:var(--muted)}.section{margin-top:19px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:11px}.section-head h2{font-size:17px;margin:0}.two{display:grid;grid-template-columns:1.2fr .8fr;gap:13px}.empty{padding:30px 10px;text-align:center;color:var(--muted)}.barrow{display:grid;grid-template-columns:105px 1fr 75px;gap:10px;align-items:center;margin:12px 0;font-size:12px}.bar{height:8px;background:#25334b;border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,#4c91ff,#39d7a2);border-radius:99px}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:var(--muted)}input,select,textarea{width:100%;background:#091321;border:1px solid #30415c;color:var(--text);padding:11px 12px;border-radius:10px;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--blue)}textarea{min-height:75px;resize:vertical}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{text-align:left;padding:11px 9px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-weight:600}.smallbtn{padding:6px 9px;border-radius:8px;border:1px solid var(--line);background:#142137;color:var(--text);font-size:12px}.tag{display:inline-block;padding:3px 8px;border-radius:99px;background:#1a2a43;color:#b9cfff;font-size:11px}.reportbox{white-space:pre-wrap;color:#d8e3f6;line-height:1.7}.hidden{display:none!important}.note{font-size:12px;color:var(--muted);margin-top:10px}.filelabel{display:inline-flex;align-items:center;gap:8px}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#e8f1ff;color:#08111e;padding:10px 16px;border-radius:10px;box-shadow:0 8px 30px #0008;z-index:5}.subnav{display:flex;gap:8px;flex-wrap:wrap}.subnav button{border:1px solid var(--line);background:#111d30;color:var(--muted);padding:8px 12px;border-radius:9px}.subnav button.active{color:white;border-color:#477fdf;background:#1a3765}
+@media(max-width:850px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}@media(max-width:520px){.app{padding:15px 12px 45px}.top{align-items:flex-start}.brand h1{font-size:17px}.local{font-size:10px}.grid{gap:9px}.card{padding:13px}.metric .value{font-size:21px}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-head{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top"><div class="brand"><div class="logo">T</div><div><h1>TradeJournal</h1><p>Your process. Your data. Your edge.</p></div></div><div class="local">● Stored on this device</div></header>
+<nav id="nav">
+<button class="active" data-page="dashboard">Overview</button><button data-page="add">＋ Add trade</button><button data-page="history">Trade history</button><button data-page="analysis">Strategy analysis</button><button data-page="reports">Weekly review</button><button data-page="settings">Backup & settings</button>
+</nav>
+
+<section id="dashboard" class="page">
+<div class="section-head"><h2>Performance overview</h2><span class="muted" id="dateLabel"></span></div>
+<div class="grid" id="metrics"></div>
+<div class="two section">
+<div class="card"><div class="section-head"><h2>Recent trades</h2><button class="smallbtn" onclick="go('history')">View all</button></div><div id="recent"></div></div>
+<div class="card"><div class="section-head"><h2>Trading discipline</h2></div><div id="discipline"></div></div>
+</div>
+<div class="card section"><div class="section-head"><h2>Daily net P&L · Last 7 days</h2></div><div id="dailyChart"></div></div>
+</section>
+
+<section id="add" class="page hidden">
+<div class="section-head"><h2 id="formTitle">Record a trade</h2><span class="tag">Manual + screenshot attachment</span></div>
+<div class="card">
+<form id="tradeForm">
+<input type="hidden" id="tradeId">
+<div class="formgrid">
+<div class="field"><label>Trade date *</label><input id="date" type="date" required></div>
+<div class="field"><label>Instrument</label><select id="instrument"><option>NIFTY</option><option>BANKNIFTY</option><option>SENSEX</option><option>FINNIFTY</option><option>Stock options</option><option>Other</option></select></div>
+<div class="field"><label>Option type</label><select id="optionType"><option>CE</option><option>PE</option><option>Futures</option><option>Equity</option></select></div>
+<div class="field"><label>Position direction</label><select id="direction"><option value="long">Long (Buy first, sell to exit)</option><option value="short">Short (Sell first, buy to exit)</option></select></div>
+<div class="field"><label>Strike price</label><input id="strike" type="number" step="any" placeholder="e.g. 24500"></div>
+<div class="field"><label>Expiry</label><input id="expiry" type="date"></div>
+<div class="field"><label>Quantity (total units) *</label><input id="qty" type="number" min="1" step="1" required placeholder="e.g. 75"></div>
+<div class="field"><label>Entry premium / price *</label><input id="entry" type="number" min="0" step="any" required></div>
+<div class="field"><label>Exit premium / price *</label><input id="exit" type="number" min="0" step="any" required></div>
+<div class="field"><label>Charges (₹)</label><input id="charges" type="number" min="0" step="any" value="0"></div>
+<div class="field"><label>Stop loss (price)</label><input id="sl" type="number" min="0" step="any"></div>
+<div class="field"><label>Target (price)</label><input id="target" type="number" min="0" step="any"></div>
+<div class="field"><label>Strategy / setup</label><input id="strategy" list="strategies" placeholder="e.g. Failed Auction at Base"><datalist id="strategies"><option>Opening Range Breakout</option><option>Base Over Base</option><option>Failed Auction at Base</option><option>VWAP</option><option>Support / Resistance</option><option>Other</option></datalist></div>
+<div class="field"><label>Market bias</label><select id="bias"><option>Neutral</option><option>Bullish</option><option>Bearish</option></select></div>
+<div class="field"><label>Entry time</label><input id="entryTime" type="time"></div>
+<div class="field"><label>Exit reason</label><select id="exitReason"><option>Target hit</option><option>Stop loss hit</option><option>Trailing stop</option><option>Manual exit</option><option>Time-based exit</option><option>Other</option></select></div>
+<div class="field"><label>Emotion before entry</label><select id="emotion"><option>Calm</option><option>Confident</option><option>Fearful</option><option>Greedy</option><option>FOMO</option><option>Frustrated</option><option>Tired</option></select></div>
+<div class="field"><label>Did you follow your plan?</label><select id="followed"><option value="yes">Yes</option><option value="no">No</option><option value="partial">Partially</option></select></div>
+<div class="field"><label>Mistake (if any)</label><select id="mistake"><option>None</option><option>FOMO entry</option><option>Revenge trading</option><option>Overtrading</option><option>Early exit</option><option>Late entry</option><option>Ignored stop loss</option><option>Against market bias</option><option>Unplanned trade</option><option>Oversized position</option><option>Other</option></select></div>
+<div class="field full"><label>Why did you enter? What confirmed the setup?</label><textarea id="reason" placeholder="Describe your entry logic..."></textarea></div>
+<div class="field full"><label>What went well / what did you learn?</label><textarea id="lesson" placeholder="Write an honest review..."></textarea></div>
+<div class="field full"><label>Chart / broker screenshot (optional)</label><input id="screenshots" type="file" accept="image/*" multiple><div class="note">Images are saved inside this device's local database with the trade. Large images use device storage.</div><div id="existingImages" class="note"></div></div>
+</div>
+<div class="actions"><button class="btn primary" type="submit">Save trade</button><button class="btn" type="button" onclick="resetForm()">Clear form</button></div>
+</form>
+</div>
+</section>
+
+<section id="history" class="page hidden">
+<div class="section-head"><h2>Trade history</h2><input id="searchTrades" placeholder="Search instrument, setup, mistake…" style="max-width:280px"></div>
+<div class="card tablewrap"><table><thead><tr><th>Date</th><th>Instrument</th><th>Type</th><th>Setup</th><th>Qty</th><th>Net P&L</th><th>Plan</th><th>Actions</th></tr></thead><tbody id="tradeRows"></tbody></table><div id="historyEmpty" class="empty hidden">No trades yet. Add your first trade to get started.</div></div>
+</section>
+
+<section id="analysis" class="page hidden">
+<div class="section-head"><h2>Strategy & behaviour analysis</h2><span class="muted">Based on saved trades</span></div>
+<div class="two"><div class="card"><h2 style="font-size:16px">Performance by strategy</h2><div id="strategyStats"></div></div><div class="card"><h2 style="font-size:16px">Mistakes that cost you</h2><div id="mistakeStats"></div></div></div>
+<div class="card section"><h2 style="font-size:16px">Psychology & discipline</h2><div id="psychStats"></div></div>
+</section>
+
+<section id="reports" class="page hidden">
+<div class="section-head"><h2>Weekly review</h2><input id="weekPicker" type="date" style="max-width:180px"></div>
+<div class="card"><div class="section-head"><h2 id="weekTitle">Your weekly report</h2><button class="btn" onclick="copyReport()">Copy report</button></div><div id="weeklyReport" class="reportbox"></div><p class="note">Weekly reviews are generated from your journal whenever you open this page. They do not require a server, cloud account or AI subscription.</p></div>
+</section>
+
+<section id="settings" class="page hidden">
+<div class="section-head"><h2>Backup & settings</h2></div>
+<div class="card section">
+<h3>Cloud sync · Windows + iPhone</h3>
+<p class="muted">Connect your own Supabase project. Your trades stay private to your signed-in account. Local storage remains available offline.</p>
+<div class="formgrid">
+<div class="field full"><label>Supabase Project URL</label><input id="supabaseUrl" type="url" placeholder="https://your-project.supabase.co" autocomplete="url"></div>
+<div class="field full"><label>Supabase Publishable key</label><input id="supabaseKey" type="password" placeholder="sb_publishable_…" autocomplete="off"></div>
+<div class="field"><label>Email</label><input id="cloudEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
+<div class="field"><label>Password</label><input id="cloudPassword" type="password" placeholder="Create a strong password" autocomplete="current-password"></div>
+</div>
+<div class="actions">
+<button class="btn primary" onclick="saveCloudSettings()">Save connection</button>
+<button class="btn" onclick="cloudSignUp()">Create account</button>
+<button class="btn" onclick="cloudSignIn()">Sign in</button>
+<button class="btn" onclick="cloudSignOut()">Sign out</button>
+<button class="btn" onclick="syncNow()">Sync now</button>
+</div>
+<div id="cloudMessage" class="note">Not connected. Add your Project URL and publishable key, then save.</div>
+<p class="note">Use the same Supabase account on both devices. Sync requires internet. Do not enter a secret/service_role key here. Supabase free-tier limits and inactivity pausing may apply.</p>
+</div>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+<div class="card"><h3>Export backup</h3><p class="muted">Download all trades and attached screenshots as a JSON backup.</p><button class="btn primary" onclick="exportBackup()">Export backup</button></div>
+<div class="card"><h3>Restore backup</h3><p class="muted">Import a previous backup. This replaces current journal data.</p><input id="restoreFile" type="file" accept="application/json"><button class="btn" onclick="importBackup()">Restore backup</button></div>
+<div class="card"><h3>Privacy & storage</h3><p class="muted">Trades are stored locally first. Cloud sync is optional and only sends data to your Supabase project when you sign in and sync.</p><button class="btn" onclick="storageInfo()">Check storage</button><div id="storageInfo" class="note"></div></div>
+</div>
+<div class="card section"><h3>Important notes</h3><ul class="muted"><li>Enter quantity as total units, not number of lots.</li><li>Net P&L = (Exit − Entry) × quantity − charges for Long, and (Entry − Exit) × quantity − charges for Short.</li><li>Keep a separate backup regularly. Browser data can be cleared by device cleanup or browser settings.</li><li>Cloud sync is optional. Sign in with the same account on both devices and tap Sync now. Keep regular JSON backups too.</li></ul></div>
+</section>
+<footer class="note" style="text-align:center;margin-top:28px">TradeJournal · Private by design · Educational tracking tool, not investment advice</footer>
+</div>
+<div id="toast" class="toast hidden"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const DB='tradejournal_local_v1', STORE='trades'; let db, allTrades=[], currentImages=[];
+const $=id=>document.getElementById(id);
+const money=n=>(n<0?'-':'')+'₹'+Math.abs(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+const fmtDate=s=>s?new Date(s+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+function openDB(){return new Promise((resolve,reject)=>{let r=indexedDB.open(DB,2);r.onupgradeneeded=()=>{let d=r.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'id'});if(!d.objectStoreNames.contains('tombstones'))d.createObjectStore('tombstones',{keyPath:'id'});};r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}
+function transact(mode,fn){return new Promise((resolve,reject)=>{let tx=db.transaction(STORE,mode),st=tx.objectStore(STORE);let result=fn(st);tx.oncomplete=()=>resolve(result);tx.onerror=()=>reject(tx.error);});}
+async function getAll(){return new Promise((resolve,reject)=>{let r=db.transaction(STORE).objectStore(STORE).getAll();r.onsuccess=()=>resolve(r.result.sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.created||0)-(a.created||0)));r.onerror=()=>reject(r.error);});}
+async function refresh(){allTrades=await getAll();renderAll();}
+function pnl(t){const move=t.direction==='short'?Number(t.entry)-Number(t.exit):Number(t.exit)-Number(t.entry);return move*Number(t.qty)-Number(t.charges||0);}
+function go(page){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$(page).classList.remove('hidden');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));if(page==='reports')renderWeekly();if(page==='history')renderHistory();if(page==='analysis')renderAnalysis();}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+function toast(s){$('toast').textContent=s;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2300);}
+function renderAll(){renderDashboard();renderHistory();}
+function renderDashboard(){
+ const today=new Date().toISOString().slice(0,10), month=today.slice(0,7), monday=new Date();monday.setDate(monday.getDate()-((monday.getDay()+6)%7));const weekStart=monday.toISOString().slice(0,10);
+ const tday=allTrades.filter(t=>t.date===today), tm=allTrades.filter(t=>t.date?.startsWith(month)), tw=allTrades.filter(t=>t.date>=weekStart&&t.date<=today);
+ const sum=a=>a.reduce((s,t)=>s+pnl(t),0), wins=allTrades.filter(t=>pnl(t)>0), losses=allTrades.filter(t=>pnl(t)<0), winrate=allTrades.length?wins.length/allTrades.length*100:0;
+ $('dateLabel').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const metrics=[['Today P&L',sum(tday)],['This week',sum(tw)],['This month',sum(tm)],['All-time net P&L',sum(allTrades)]];
+ $('metrics').innerHTML=metrics.map(([l,v])=>`<div class="card metric"><div class="label">${l}</div><div class="value ${v>=0?'positive':'negative'}">${money(v)}</div></div>`).join('')+`<div class="card metric"><div class="label">Win rate</div><div class="value">${winrate.toFixed(1)}%</div></div><div class="card metric"><div class="label">Total trades</div><div class="value">${allTrades.length}</div></div><div class="card metric"><div class="label">Average winner</div><div class="value positive">${money(wins.length?sum(wins)/wins.length:0)}</div></div><div class="card metric"><div class="label">Average loser</div><div class="value negative">${money(losses.length?sum(losses)/losses.length:0)}</div></div>`;
+ $('recent').innerHTML=allTrades.length?`<div class="tablewrap"><table><thead><tr><th>Date</th><th>Setup</th><th>Net P&L</th></tr></thead><tbody>${allTrades.slice(0,5).map(t=>`<tr><td>${fmtDate(t.date)}</td><td>${esc(t.strategy||'—')}</td><td class="${pnl(t)>=0?'positive':'negative'}">${money(pnl(t))}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Your first trade will appear here.</div>';
+ const followed=allTrades.filter(t=>t.followed==='yes').length, mistakes=allTrades.filter(t=>t.mistake&&t.mistake!=='None').length;
+ $('discipline').innerHTML=`<div class="barrow"><span>Plan followed</span><div class="bar"><span style="width:${allTrades.length?followed/allTrades.length*100:0}%"></span></div><b>${allTrades.length?(followed/allTrades.length*100).toFixed(0):0}%</b></div><div class="barrow"><span>Trades with mistake</span><div class="bar"><span style="width:${allTrades.length?mistakes/allTrades.length*100:0}%;background:var(--amber)"></span></div><b>${mistakes}</b></div><p class="note">Discipline scores become more meaningful as you record more trades.</p>`;
+ const days=[];for(let i=6;i>=0;i--){let d=new Date();d.setDate(d.getDate()-i);let ds=d.toISOString().slice(0,10);days.push({d,ds,v:sum(allTrades.filter(t=>t.date===ds))});}let max=Math.max(1,...days.map(x=>Math.abs(x.v)));
+ $('dailyChart').innerHTML=days.map(x=>`<div class="barrow"><span>${x.d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric'})}</span><div class="bar"><span style="width:${Math.abs(x.v)/max*100}%;background:${x.v>=0?'linear-gradient(90deg,#258c6a,#35d39a)':'linear-gradient(90deg,#a43f50,#ff6b78)'}"></span></div><b class="${x.v>=0?'positive':'negative'}">${money(x.v)}</b></div>`).join('');
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderHistory(){let q=($('searchTrades')?.value||'').toLowerCase();let arr=allTrades.filter(t=>[t.instrument,t.strategy,t.mistake,t.reason,t.optionType].join(' ').toLowerCase().includes(q));$('tradeRows').innerHTML=arr.map(t=>`<tr><td>${fmtDate(t.date)}</td><td>${esc(t.instrument)}</td><td>${esc(t.optionType)}</td><td>${esc(t.strategy||'—')}</td><td>${t.qty}</td><td class="${pnl(t)>=0?'positive':'negative'}">${money(pnl(t))}</td><td>${esc(t.followed)}</td><td><button class="smallbtn" onclick="editTrade('${t.id}')">Edit</button> <button class="smallbtn" onclick="deleteTrade('${t.id}')">Delete</button> ${t.images?.length?`<button class="smallbtn" onclick="viewImages('${t.id}')">Images (${t.images.length})</button>`:''}</td></tr>`).join('');$('historyEmpty').classList.toggle('hidden',arr.length>0);}
+$('searchTrades').addEventListener('input',renderHistory);
+const fields=['date','instrument','optionType','direction','strike','expiry','qty','entry','exit','charges','sl','target','strategy','bias','entryTime','exitReason','emotion','followed','mistake','reason','lesson'];
+function resetForm(){ $('tradeForm').reset();$('tradeId').value='';$('date').value=new Date().toISOString().slice(0,10);$('charges').value=0;currentImages=[];$('existingImages').textContent='';$('formTitle').textContent='Record a trade';}
+$('tradeForm').addEventListener('submit',async e=>{e.preventDefault();let id=$('tradeId').value||crypto.randomUUID();let old=allTrades.find(t=>t.id===id);let t={id,created:old?.created||Date.now(),updatedAt:new Date().toISOString()};fields.forEach(k=>t[k]=$(k).value);['strike','qty','entry','exit','charges','sl','target'].forEach(k=>t[k]=Number(t[k]||0));t.images=[...(old?.images||[]),...currentImages];await transact('readwrite',st=>st.put(t));await clearTombstone(id);await refresh();resetForm();go('history');toast('Trade saved on this device');});
+$('screenshots').addEventListener('change',async e=>{currentImages=[];for(const f of e.target.files){if(!f.type.startsWith('image/'))continue;if(f.size>8*1024*1024){toast('Skipped image over 8 MB');continue;}currentImages.push({name:f.name,type:f.type,data:await readData(f)});} $('existingImages').textContent=currentImages.length?`${currentImages.length} new image(s) ready to save`:'';});
+function readData(f){return new Promise((res,rej)=>{let r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f);});}
+async function editTrade(id){let t=allTrades.find(x=>x.id===id);if(!t)return;fields.forEach(k=>$(k).value=t[k]??'');$('tradeId').value=id;$('formTitle').textContent='Edit trade';$('existingImages').textContent=`${t.images?.length||0} existing screenshot(s) · new uploads will be added`;currentImages=[];go('add');}
+async function deleteTrade(id){if(!confirm('Delete this trade and its attached screenshots?'))return;await transact('readwrite',st=>st.delete(id));await putTombstone(id);await refresh();toast('Trade deleted locally; sync to apply on other devices');}
+function viewImages(id){let t=allTrades.find(x=>x.id===id);if(!t?.images?.length)return;let w=window.open();if(!w){toast('Allow pop-ups to view screenshots');return;}w.document.write('<title>Trade screenshots</title><body style="background:#111;color:white;font:16px sans-serif">');t.images.forEach(im=>w.document.write(`<p>${esc(im.name)}</p><img style="max-width:95%;height:auto;margin-bottom:20px" src="${im.data}">`));w.document.write('</body>');}
+function groupBy(arr,key){return arr.reduce((o,t)=>{let k=t[key]||'Not specified';(o[k]??=[]).push(t);return o;},{});}
+function renderAnalysis(){
+ let sg=groupBy(allTrades,'strategy'), rows=Object.entries(sg).map(([k,a])=>({k,a,v:a.reduce((s,t)=>s+pnl(t),0),wr:a.filter(t=>pnl(t)>0).length/a.length*100})).sort((a,b)=>b.v-a.v);
+ $('strategyStats').innerHTML=rows.length?rows.map(x=>`<div class="barrow"><span>${esc(x.k)}</span><div class="bar"><span style="width:${x.wr}%"></span></div><b class="${x.v>=0?'positive':'negative'}">${money(x.v)} · ${x.wr.toFixed(0)}%</b></div>`).join(''):'<div class="empty">Add trades with a strategy to compare setups.</div>';
+ let mg=allTrades.filter(t=>t.mistake&&t.mistake!=='None').reduce((o,t)=>{o[t.mistake]=(o[t.mistake]||0)+pnl(t);return o;},{});
+ $('mistakeStats').innerHTML=Object.keys(mg).length?Object.entries(mg).sort((a,b)=>a[1]-b[1]).map(([k,v])=>`<div class="barrow"><span>${esc(k)}</span><div class="bar"><span style="width:${Math.min(100,Math.abs(v)/(Math.max(1,...Object.values(mg).map(Math.abs)))*100)}%;background:var(--amber)"></span></div><b class="${v>=0?'positive':'negative'}">${money(v)}</b></div>`).join(''):'<div class="empty">No mistakes tagged. Be honest when reviewing trades.</div>';
+ let em=groupBy(allTrades,'emotion');$('psychStats').innerHTML=Object.entries(em).map(([k,a])=>`<span class="tag">${esc(k)}: ${a.length} trade(s), ${money(a.reduce((s,t)=>s+pnl(t),0))}</span>`).join(' ')||'<div class="empty">Psychology insights appear after you record trades.</div>';
+}
+function weekBounds(date){let d=new Date(date+'T12:00:00');let day=(d.getDay()+6)%7;let s=new Date(d);s.setDate(d.getDate()-day);let e=new Date(s);e.setDate(s.getDate()+6);return [s.toISOString().slice(0,10),e.toISOString().slice(0,10)];}
+function renderWeekly(){let date=$('weekPicker').value||new Date().toISOString().slice(0,10);$('weekPicker').value=date;let [s,e]=weekBounds(date),a=allTrades.filter(t=>t.date>=s&&t.date<=e),net=a.reduce((x,t)=>x+pnl(t),0),wins=a.filter(t=>pnl(t)>0),losses=a.filter(t=>pnl(t)<0),sum=x=>x.reduce((z,t)=>z+pnl(t),0),wr=a.length?wins.length/a.length*100:0;
+ let by=Object.entries(groupBy(a,'strategy')).map(([k,v])=>`${k}: ${v.length} trades, ${money(sum(v))}, ${((v.filter(t=>pnl(t)>0).length/v.length)*100).toFixed(0)}% wins`);
+ let mistakes=Object.entries(groupBy(a.filter(t=>t.mistake!=='None'), 'mistake')).sort((x,y)=>y[1].length-x[1].length);
+ let follow=a.filter(t=>t.followed==='yes').length, non=a.filter(t=>t.mistake!=='None');
+ let best=[...a].sort((x,y)=>pnl(y)-pnl(x))[0],worst=[...a].sort((x,y)=>pnl(x)-pnl(y))[0];
+ let lines=`PERIOD\n${fmtDate(s)} – ${fmtDate(e)}\n\nRESULT\nNet P&L: ${money(net)}\nTrades: ${a.length} · Wins: ${wins.length} · Losses: ${losses.length}\nWin rate: ${wr.toFixed(1)}%\nAverage winning trade: ${money(wins.length?sum(wins)/wins.length:0)}\nAverage losing trade: ${money(losses.length?sum(losses)/losses.length:0)}\n\nBEST / WORST\nBest trade: ${best?best.instrument+' '+best.optionType+' · '+money(pnl(best)):'No trades'}\nWorst trade: ${worst?worst.instrument+' '+worst.optionType+' · '+money(pnl(worst)):'No trades'}\n\nSTRATEGIES\n${by.join('\n')||'No strategy data recorded.'}\n\nDISCIPLINE\nFollowed plan: ${follow}/${a.length} (${a.length?(follow/a.length*100).toFixed(0):0}%)\nTrades tagged with mistakes: ${non.length}\n${mistakes.map(([k,v])=>`• ${k}: ${v.length} trade(s), ${money(sum(v))}`).join('\n')||'No mistakes tagged.'}\n\nREVIEW PROMPTS\n1. Which setup gave the cleanest execution?\n2. Did I follow my stop loss and position-size rules?\n3. What one behaviour will I change next week?\n\nReminder: This report describes recorded trades; it does not predict future results.`;
+ $('weekTitle').textContent=`Weekly report · ${fmtDate(s)} – ${fmtDate(e)}`;$('weeklyReport').textContent=lines;window.currentReport=lines;}
+$('weekPicker').addEventListener('change',renderWeekly);
+function copyReport(){if(!window.currentReport)return;navigator.clipboard?.writeText(window.currentReport).then(()=>toast('Report copied')).catch(()=>toast('Clipboard not available'));}
+function exportBackup(){let blob=new Blob([JSON.stringify({app:'TradeJournal',version:1,exportedAt:new Date().toISOString(),trades:allTrades},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tradejournal-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(a.href);}
+async function importBackup(){let f=$('restoreFile').files[0];if(!f){toast('Choose a backup file first');return;}if(!confirm('This replaces all trades currently stored on this device. Continue?'))return;try{let j=JSON.parse(await f.text());if(!Array.isArray(j.trades))throw Error('Invalid backup');await new Promise((resolve,reject)=>{let tx=db.transaction(STORE,'readwrite'),st=tx.objectStore(STORE);st.clear();j.trades.forEach(t=>st.put(t));tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});await refresh();toast('Backup restored');}catch(e){alert('Could not restore: '+e.message);}}
+async function storageInfo(){let count=allTrades.length,bytes=new Blob([JSON.stringify(allTrades)]).size;$('storageInfo').textContent=`${count} trades · Approx. ${(bytes/1024).toFixed(1)} KB of journal data`;}
+
+// Optional Supabase sync. Local IndexedDB remains the offline-first source.
+let sbClient=null;
+const CLOUD_URL_KEY='tj_supabase_url', CLOUD_PUB_KEY='tj_supabase_publishable';
+function cloudMsg(s){const el=$('cloudMessage');if(el)el.textContent=s;}
+function setSyncStatus(s){const el=$('syncStatus');if(el)el.textContent=s;}
+function loadCloudSettings(){ $('supabaseUrl').value=localStorage.getItem(CLOUD_URL_KEY)||''; $('supabaseKey').value=localStorage.getItem(CLOUD_PUB_KEY)||''; initSupabase(); }
+function initSupabase(){
+ const url=localStorage.getItem(CLOUD_URL_KEY), key=localStorage.getItem(CLOUD_PUB_KEY);
+ if(!url||!key||!window.supabase){sbClient=null;return null;}
+ try{sbClient=window.supabase.createClient(url,key);return sbClient;}catch(e){sbClient=null;cloudMsg('Could not initialise Supabase: '+e.message);return null;}
+}
+function saveCloudSettings(){
+ const url=$('supabaseUrl').value.trim(), key=$('supabaseKey').value.trim();
+ if(!/^https:\/\/[a-zA-Z0-9.-]+$/.test(url)||!key.startsWith('sb_publishable_')){cloudMsg('Check the Project URL and sb_publishable_ key.');return;}
+ localStorage.setItem(CLOUD_URL_KEY,url);localStorage.setItem(CLOUD_PUB_KEY,key);initSupabase();
+ cloudMsg('Connection details saved on this device. Create an account or sign in next.');setSyncStatus('● CLOUD READY');
+}
+async function cloudSignUp(){
+ if(!sbClient){cloudMsg('Save your Project URL and publishable key first.');return;}
+ const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;
+ if(!email||password.length<8){cloudMsg('Enter your email and a password of at least 8 characters.');return;}
+ const {error}=await sbClient.auth.signUp({email,password});
+ cloudMsg(error?'Sign-up error: '+error.message:'Account request sent. Check your email if confirmation is enabled, then sign in.');
+}
+async function cloudSignIn(){
+ if(!sbClient){cloudMsg('Save your Project URL and publishable key first.');return;}
+ const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;
+ const {data,error}=await sbClient.auth.signInWithPassword({email,password});
+ if(error){cloudMsg('Sign-in error: '+error.message);return;}
+ cloudMsg('Signed in as '+data.user.email+'. You can now sync.');setSyncStatus('● SIGNED IN');
+}
+async function cloudSignOut(){
+ if(!sbClient){cloudMsg('No Supabase connection configured.');return;}
+ const {error}=await sbClient.auth.signOut();cloudMsg(error?'Sign-out error: '+error.message:'Signed out. Local trades remain on this device.');setSyncStatus('● LOCAL MODE');
+}
+async function getTombstones(){
+ return new Promise((resolve,reject)=>{let r=db.transaction('tombstones').objectStore('tombstones').getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error);});
+}
+async function putTombstone(id){
+ return new Promise((resolve,reject)=>{let tx=db.transaction('tombstones','readwrite');tx.objectStore('tombstones').put({id,deletedAt:new Date().toISOString()});tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+}
+async function clearTombstone(id){
+ return new Promise((resolve,reject)=>{let tx=db.transaction('tombstones','readwrite');tx.objectStore('tombstones').delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});
+}
+async function syncNow(){
+ if(!sbClient){cloudMsg('Save your Project URL and publishable key first.');return;}
+ const {data:{user},error:authErr}=await sbClient.auth.getUser();
+ if(authErr||!user){cloudMsg('Please sign in before syncing.');return;}
+ try{
+  cloudMsg('Syncing… please keep this page open.');
+  const {data:remote,error}=await sbClient.from('journal_trades').select('trade_id,trade_data,updated_at').eq('user_id',user.id);
+  if(error)throw error;
+  const remoteMap=new Map((remote||[]).map(r=>[r.trade_id,r]));
+  const tombs=await getTombstones();
+  const tombMap=new Map(tombs.map(t=>[t.id,t]));
+  const localMap=new Map(allTrades.map(t=>[t.id,t]));
+  const ids=new Set([...remoteMap.keys(),...localMap.keys(),...tombMap.keys()]);
+  const upserts=[];
+  for(const id of ids){
+   const l=localMap.get(id), r=remoteMap.get(id), tomb=tombMap.get(id);
+   const localTime=l?.updatedAt||new Date(l?.created||0).toISOString();
+   const deleteTime=tomb?.deletedAt;
+   if(tomb && (!l || deleteTime>=localTime) && (!r || deleteTime>=r.updated_at)){
+    upserts.push({user_id:user.id,trade_id:id,trade_data:{_deleted:true},updated_at:deleteTime});
+    if(l)await transact('readwrite',st=>st.delete(id));
+    continue;
+   }
+   if(l && (!r || new Date(localTime)>new Date(r.updated_at))){
+    upserts.push({user_id:user.id,trade_id:id,trade_data:l,updated_at:localTime});
+   }else if(r){
+    if(r.trade_data?._deleted){if(l)await transact('readwrite',st=>st.delete(id));}
+    else if(!l || new Date(r.updated_at)>new Date(localTime)){
+     const rt={...r.trade_data,updatedAt:r.updated_at};
+     await transact('readwrite',st=>st.put(rt));
+    }
+   }
+  }
+  if(upserts.length){
+   const {error:upErr}=await sbClient.from('journal_trades').upsert(upserts,{onConflict:'user_id,trade_id'});
+   if(upErr)throw upErr;
+  }
+  // Clear local tombstones after their delete markers are safely uploaded.
+  for(const t of tombs)await clearTombstone(t.id);
+  await refresh();
+  cloudMsg('Sync complete. '+allTrades.length+' trade(s) available on this device.');setSyncStatus('● SYNCED');
+ }catch(e){cloudMsg('Sync failed: '+(e.message||String(e)));setSyncStatus('● SYNC ERROR');}
+}
+
+async function init(){try{db=await openDB();resetForm();await refresh();loadCloudSettings();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(e){alert('Could not open local database in this browser. Try opening this app through a local web server or installed PWA.');}}
+init();
+</script>
+</body></html>
