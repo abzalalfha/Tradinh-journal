@@ -1,0 +1,1 @@
+# Tradinh-journal
